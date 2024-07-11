@@ -1,4 +1,4 @@
-module github.com/iami/definger
+module github.com/iami317/definger
 
 go 1.21
 
