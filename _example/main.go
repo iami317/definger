@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gitee.com/menciis/definger"
+	"github.com/iami317/definger"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
