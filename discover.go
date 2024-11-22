@@ -3,6 +3,7 @@ package definger
 import (
 	"fmt"
 	"gitee.com/menciis/logx"
+	"github.com/iami317/hubur"
 	"github.com/k0kubun/pp/v3"
 	"net"
 )
@@ -63,6 +64,9 @@ func (d *DefineResult) HttpIdentifyResult() {
 }
 
 func (d *DefineResult) getTargetUrl(host string, port string) string {
+	if hubur.IsIP(host) && hubur.IsIPv6(host) {
+		host = fmt.Sprintf("[%v]", host)
+	}
 	if port == "80" {
 		return fmt.Sprintf("http://%v", host)
 	} else if port == "443" || port == "8443" || port == "10000" {
