@@ -60,14 +60,18 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 	// 开始识别
 	var successType string
 	var identify_result string
+	var category string
+
 	type Identify_Result struct {
-		Name string
-		Rank int
-		Type string
+		Name     string
+		Category string
+		Rank     int
+		Type     string
 	}
 	var IdentifyData []Identify_Result
 
 	wg := &sync.WaitGroup{}
+
 	for _, rule := range RuleData { //循环取出指纹规则
 		wg.Add(1)
 		go func(rule RuleLab) {
@@ -102,7 +106,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				if rule.Mode == "" {
 					if len(regexp.MustCompile("header").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "CustomRequest"
 							successType = rule.Type
 							return
@@ -110,14 +119,24 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("body").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
@@ -126,21 +145,36 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				if rule.Mode == "or" {
 					if len(regexp.MustCompile("header").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 					}
 					if len(regexp.MustCompile("body").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
@@ -164,7 +198,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if index == 2 {
-						IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+						IdentifyData = append(IdentifyData, Identify_Result{
+							Name:     rule.Name,
+							Category: rule.Category,
+							Rank:     rule.Rank,
+							Type:     rule.Type,
+						})
 						RequestRule = "CustomRequest"
 					}
 				}
@@ -186,28 +225,48 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if index == 3 {
-						IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+						IdentifyData = append(IdentifyData, Identify_Result{
+							Name:     rule.Name,
+							Category: "",
+							Rank:     rule.Rank,
+							Type:     rule.Type,
+						})
 						RequestRule = "CustomRequest"
 					}
 				}
 				if rule.Mode == "or|or" {
 					if len(regexp.MustCompile("header").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 					}
 					if len(regexp.MustCompile("body").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
@@ -218,36 +277,66 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					all_type := grep.FindStringSubmatch(rule.Type)
 					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[1], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 					}
 					if len(regexp.MustCompile("body").FindAllStringIndex(all_type[1], -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(all_type[1], -1)) == 1 {
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
@@ -259,36 +348,66 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					fmt.Println(all_type)
 					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[3], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 					}
 					if len(regexp.MustCompile("body").FindAllStringIndex(all_type[3], -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(all_type[3], -1)) == 1 {
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							successType = rule.Type
 							return
 						}
@@ -312,7 +431,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				if rule.Mode == "" {
 					if len(regexp.MustCompile("header").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -320,7 +444,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("body").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -328,7 +457,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -338,7 +472,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				if rule.Mode == "or" {
 					if len(regexp.MustCompile("header").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -346,7 +485,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("body").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -354,7 +498,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -379,7 +528,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if index == 2 {
-						IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+						IdentifyData = append(IdentifyData, Identify_Result{
+							Name:     rule.Name,
+							Category: rule.Category,
+							Rank:     rule.Rank,
+							Type:     rule.Type,
+						})
 						RequestRule = "DefaultRequest"
 					}
 				}
@@ -401,14 +555,24 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if index == 3 {
-						IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+						IdentifyData = append(IdentifyData, Identify_Result{
+							Name:     rule.Name,
+							Category: rule.Category,
+							Rank:     rule.Rank,
+							Type:     rule.Type,
+						})
 						RequestRule = "DefaultRequest"
 					}
 				}
 				if rule.Mode == "or|or" {
 					if len(regexp.MustCompile("header").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -416,7 +580,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("body").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -424,7 +593,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -437,13 +611,23 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					fmt.Println(all_type)
 					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[1], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -451,13 +635,23 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("body").FindAllStringIndex(all_type[1], -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -465,13 +659,23 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(all_type[1], -1)) == 1 {
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -484,13 +688,23 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					fmt.Println(all_type)
 					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[3], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -498,13 +712,23 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("body").FindAllStringIndex(all_type[3], -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -512,13 +736,23 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(all_type[3], -1)) == 1 {
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
-							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+							IdentifyData = append(IdentifyData, Identify_Result{
+								Name:     rule.Name,
+								Category: rule.Category,
+								Rank:     rule.Rank,
+								Type:     rule.Type,
+							})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
@@ -546,6 +780,11 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 	}
 
 	for _, rs := range IdentifyData {
+		if rs.Category != "" {
+			if res, ok := CateData[rs.Category]; ok {
+				category = res.Name
+			}
+		}
 		switch rs.Rank {
 		case 1:
 			identify_result += rs.Name + " "
@@ -556,7 +795,15 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 		}
 	}
 	//r := strings.ReplaceAll(identify_result, "][", "] [")
-	res := []IdentifyResult{{successType, RespCode, identify_result, url, RespTitle, DefaultTechnologies}}
+
+	res := []IdentifyResult{{successType,
+		RespCode,
+		identify_result,
+		url,
+		RespTitle,
+		category,
+		0,
+		DefaultTechnologies}}
 	return res, err
 }
 
@@ -577,6 +824,8 @@ type IdentifyResult struct {
 	Result       string
 	Url          string
 	Title        string
+	Category     string
+	Level        int
 	Technologies []string
 }
 

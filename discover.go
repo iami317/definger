@@ -17,6 +17,8 @@ type DefineResult struct {
 	Title        string   `json:"title,omitempty"`
 	Host         string   `json:"host,omitempty"`
 	Port         string   `json:"port,omitempty"`
+	Category     string   `json:"category,omitempty"`
+	Level        int      `json:"level,omitempty"`
 	Path         string   `json:"path,omitempty"`
 	Url          string   `json:"url,omitempty"`
 	Protocol     string   `json:"protocol,omitempty" #:"协议"`
@@ -57,6 +59,7 @@ func (d *DefineResult) HttpIdentifyResult() {
 		d.IdentifyInfo = results.Result
 		d.Url = results.Url
 		d.Title = results.Title
+		d.Category = results.Category
 		d.Technologies = results.Technologies
 	}
 
