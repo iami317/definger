@@ -78511,5 +78511,39 @@
             "reqHeader": null,
             "reqBody": ""
         }
+    },
+  {
+    "rank": 1,
+    "name": "geoserver",
+    "type": "body",
+    "mode": "",
+    "rule": {
+      "inBody": "<a href=\"/geoserver/\">/geoserver</a>",
+      "inHeader": "",
+      "inIcoMd5": ""
+    },
+    "http": {
+      "reqMethod": "",
+      "reqPath": "",
+      "reqHeader": null,
+      "reqBody": ""
     }
+  },
+  {
+    "rank": 1,
+    "name": "nginxWebUI",
+    "type": "body",
+    "mode": "",
+    "rule": {
+      "inBody": "<title>nginxWebUI</title>",
+      "inHeader": "",
+      "inIcoMd5": ""
+    },
+    "http": {
+      "reqMethod": "",
+      "reqPath": "",
+      "reqHeader": null,
+      "reqBody": ""
+    }
+  }
 ]
