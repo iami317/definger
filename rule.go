@@ -4641,4 +4641,6 @@ var RuleData = []RuleLab{
 	{1, "ZZSMIT-Public-Bicycle-Management-System", "body", "", InStr{"(href=\"/skins/bicycle/css/login.css\")", "", ""}, ReqHttp{"", "", nil, ""}},
 	{1, "ZZZCMS", "body", "", InStr{"(href=\"/?brandlist/zzzcms|.banner .in_business ul li dd)", "", ""}, ReqHttp{"", "", nil, ""}},
 	{1, "aj-report", "body", "", InStr{"<title>AJ-Report</title>", "", ""}, ReqHttp{"", "", nil, ""}},
+	{1, "geoserver", "body", "", InStr{"<a href=\"/geoserver/\">/geoserver</a>", "", ""}, ReqHttp{"", "", nil, ""}},
+	{1, "nginxWebUI", "body", "", InStr{"<title>nginxWebUI</title>", "", ""}, ReqHttp{"", "", nil, ""}},
 }
