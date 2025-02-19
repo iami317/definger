@@ -4643,4 +4643,5 @@ var RuleData = []RuleLab{
 	{1, "aj-report", "body", "", InStr{"<title>AJ-Report</title>", "", ""}, ReqHttp{"", "", nil, ""}},
 	{1, "geoserver", "body", "", InStr{"<a href=\"/geoserver/\">/geoserver</a>", "", ""}, ReqHttp{"", "", nil, ""}},
 	{1, "nginxWebUI", "body", "", InStr{"<title>nginxWebUI</title>", "", ""}, ReqHttp{"", "", nil, ""}},
+	{1, "hugegraph", "body", "", InStr{"\"service\":\"hugegraph\"", "", ""}, ReqHttp{"", "", nil, ""}},
 }
