@@ -5,6 +5,7 @@ import (
 	"gitee.com/menciis/logx"
 	"github.com/k0kubun/pp/v3"
 	"net"
+	"strings"
 )
 
 var DefaultHeader = map[string]string{
@@ -58,6 +59,9 @@ func (d *DefineResult) HttpIdentifyResult() {
 		d.Url = results.Url
 		d.Title = results.Title
 		d.Technologies = results.Technologies
+		if strings.HasPrefix(d.Url, "https") {
+			d.Protocol = "https"
+		}
 	}
 
 }
