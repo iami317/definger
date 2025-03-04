@@ -4645,5 +4645,5 @@ var RuleData = []RuleLab{
 	{1, "nginxWebUI", "body", "", InStr{"<title>nginxWebUI</title>", "", ""}, ReqHttp{"", "", nil, ""}},
 	{1, "hugegraph", "body", "", InStr{"\"service\":\"hugegraph\"", "", ""}, ReqHttp{"", "", nil, ""}},
 	{1, "cyberpanel", "body", "", InStr{"<title> Login - CyberPanel </title>", "", ""}, ReqHttp{"", "", nil, ""}},
-	{1, "spring", "body", "", InStr{"\"path\":\"/functionRouter\"", "", ""}, ReqHttp{"GET", "/functionRouter", nil, ""}},
+	{1, "springcloud", "body", "", InStr{"\"path\":\"/functionRouter\"", "", ""}, ReqHttp{"GET", "/functionRouter", nil, ""}},
 }
