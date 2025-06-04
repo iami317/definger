@@ -6,7 +6,6 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
-	wappalyzer "github.com/projectdiscovery/wappalyzergo"
 	"github.com/spf13/cast"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"io/ioutil"
@@ -898,14 +897,14 @@ func customRequests(Url string, timeout int, Method string, Path string, Header 
 }
 
 func getTechnologies(header map[string][]string, data []byte) (tech []string, err error) {
-	wapp, err := wappalyzer.New()
-	if err != nil {
-		return nil, err
-	}
-	matches := wapp.Fingerprint(header, data)
-	for match, _ := range matches {
-		tech = append(tech, match)
-	}
+	//wapp, err := wappalyzer.New()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//matches := wapp.Fingerprint(header, data)
+	//for match, _ := range matches {
+	//	tech = append(tech, match)
+	//}
 	return tech, nil
 }
 
