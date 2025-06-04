@@ -598,7 +598,8 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 	}
 	//跳过证书验证
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
+		DisableKeepAlives: true,
 	}
 	cookieJar, _ := cookiejar.New(nil)
 	client := &http.Client{
