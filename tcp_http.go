@@ -616,7 +616,9 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 	}
 
 	defer func() {
-		_ = response.Body.Close()
+		if err = response.Body.Close(); err != nil {
+			fmt.Println("-------连接关闭失败", err.Error())
+		}
 	}()
 
 	//获取response status code
