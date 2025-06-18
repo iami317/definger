@@ -6,6 +6,8 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
+	"gitee.com/menciis/logx"
+	wappalyzer "github.com/projectdiscovery/wappalyzergo"
 	"github.com/spf13/cast"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"io/ioutil"
@@ -20,6 +22,21 @@ import (
 	"time"
 	"unicode/utf8"
 )
+
+var (
+	once sync.Once
+	wapp *wappalyzer.Wappalyze
+)
+
+func init() {
+	once.Do(func() {
+		var err error
+		wapp, err = wappalyzer.New()
+		if err != nil {
+			logx.Debug(err)
+		}
+	})
+}
 
 func identify(url string, timeout int) ([]IdentifyResult, error) {
 	var RespTitle string
@@ -900,14 +917,10 @@ func customRequests(Url string, timeout int, Method string, Path string, Header 
 }
 
 func getTechnologies(header map[string][]string, data []byte) (tech []string, err error) {
-	//wapp, err := wappalyzer.New()
-	//if err != nil {
-	//	return nil, err
-	//}
-	//matches := wapp.Fingerprint(header, data)
-	//for match, _ := range matches {
-	//	tech = append(tech, match)
-	//}
+	matches := wapp.Fingerprint(header, data)
+	for match, _ := range matches {
+		tech = append(tech, match)
+	}
 	return tech, nil
 }
 
