@@ -668,7 +668,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 		for key, value := range DefaultHeader {
 			req.Header.Set(key, value)
 		}
-
+		req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko,hzon-bas) Chrome/137.0.0.0 Safari/537.36")
 		client := &http.Client{
 			Transport: tr,
 			Jar:       cookieJar,
@@ -867,6 +867,7 @@ func customRequests(Url string, timeout int, Method string, Path string, Header 
 		req.Header.Set(headerKey, headerValue)
 	}
 
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko,hzon-bas) Chrome/137.0.0.0 Safari/537.36")
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -944,6 +945,7 @@ func getFaviconMd5(Url string, timeout int) string {
 		req.Header.Set(key, value)
 	}
 
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko,hzon-bas) Chrome/137.0.0.0 Safari/537.36")
 	resp, err := client.Do(req)
 	if err != nil {
 		return ""
@@ -975,6 +977,7 @@ func getFaviconHash(imageURL string, timeout int) (int64, error) {
 		req.Header.Set(key, value)
 	}
 
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko,hzon-bas) Chrome/137.0.0.0 Safari/537.36")
 	resp, err := client.Do(req)
 	if err != nil {
 		return 0, err
