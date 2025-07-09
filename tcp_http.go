@@ -613,6 +613,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 	for key, value := range DefaultHeader {
 		req.Header.Set(key, value)
 	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko,hzon-bas) Chrome/137.0.0.0 Safari/537.36")
 	//跳过证书验证
 	tr := &http.Transport{
 		TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
