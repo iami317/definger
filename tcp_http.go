@@ -6,8 +6,6 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
-	"gitee.com/menciis/logx"
-	wappalyzer "github.com/projectdiscovery/wappalyzergo"
 	"github.com/spf13/cast"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"io/ioutil"
@@ -23,6 +21,7 @@ import (
 	"unicode/utf8"
 )
 
+/*
 var (
 	once sync.Once
 	wapp *wappalyzer.Wappalyze
@@ -37,6 +36,8 @@ func init() {
 		}
 	})
 }
+
+*/
 
 func identify(url string, timeout int) ([]IdentifyResult, error) {
 	var RespTitle string
@@ -272,7 +273,6 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				if rule.Mode == "or|and" {
 					grep := regexp.MustCompile("(.*)\\|(.*)\\|(.*)")
 					all_type := grep.FindStringSubmatch(rule.Type)
-					fmt.Println(all_type)
 					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[3], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
@@ -450,7 +450,6 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				if rule.Mode == "and|or" {
 					grep := regexp.MustCompile("(.*)\\|(.*)\\|(.*)")
 					all_type := grep.FindStringSubmatch(rule.Type)
-					fmt.Println(all_type)
 					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[1], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
@@ -497,7 +496,6 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				if rule.Mode == "or|and" {
 					grep := regexp.MustCompile("(.*)\\|(.*)\\|(.*)")
 					all_type := grep.FindStringSubmatch(rule.Type)
-					fmt.Println(all_type)
 					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[3], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
@@ -754,10 +752,10 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 			//md5 hash
 			faviconMd5 := getFaviconMd5(Url, timeout)
 			faviconHash, _ := getFaviconHash(Url, timeout)
-			technologies, _ := getTechnologies(response.Header, bodyBytes)
+			//technologies, _ := getTechnologies(response.Header, bodyBytes)
 			//返回值
 			RespData := []RespLab{
-				{redirectUrl, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, technologies},
+				{redirectUrl, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, nil},
 			}
 			return RespData, nil
 		}
@@ -792,10 +790,10 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 		//md5 hash
 		faviconMd5 := getFaviconMd5(Url, timeout)
 		faviconHash, _ := getFaviconHash(Url, timeout)
-		technologies, _ := getTechnologies(response.Header, bodyBytes)
+		//technologies, _ := getTechnologies(response.Header, bodyBytes)
 		//返回数据
 		RespData := []RespLab{
-			{redirectUrl, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, technologies},
+			{redirectUrl, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, nil},
 		}
 		return RespData, nil
 	}
@@ -830,10 +828,10 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 	// md5 hash
 	faviconMd5 := getFaviconMd5(Url, timeout)
 	faviconHash, _ := getFaviconHash(Url, timeout)
-	technologies, _ := getTechnologies(response.Header, bodyBytes)
+	//technologies, _ := getTechnologies(response.Header, bodyBytes)
 	//返回数据
 	RespData := []RespLab{
-		{Url, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, technologies},
+		{Url, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, nil},
 	}
 	return RespData, nil
 
@@ -915,22 +913,22 @@ func customRequests(Url string, timeout int, Method string, Path string, Header 
 	//获取response status code
 	var statusCode = resp.StatusCode
 	responseStatusCode := strconv.Itoa(statusCode)
-	technologies, _ := getTechnologies(resp.Header, bodyBytes)
+	//technologies, _ := getTechnologies(resp.Header, bodyBytes)
 	//返回数据
 	RespData := []RespLab{
-		{Url, responseBody, responseHeader, responseStatusCode, respTitle, "", 0, technologies},
+		{Url, responseBody, responseHeader, responseStatusCode, respTitle, "", 0, nil},
 	}
 	return RespData, nil
 
 }
 
-func getTechnologies(header map[string][]string, data []byte) (tech []string, err error) {
-	matches := wapp.Fingerprint(header, data)
-	for match, _ := range matches {
-		tech = append(tech, match)
-	}
-	return tech, nil
-}
+//func getTechnologies(header map[string][]string, data []byte) (tech []string, err error) {
+//	matches := wapp.Fingerprint(header, data)
+//	for match, _ := range matches {
+//		tech = append(tech, match)
+//	}
+//	return tech, nil
+//}
 
 func getFaviconMd5(Url string, timeout int) string {
 	client := &http.Client{
