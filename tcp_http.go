@@ -633,7 +633,11 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 		return nil, err
 	}
 
-	defer response.Body.Close()
+	defer func() {
+		if err = response.Body.Close(); err != nil {
+			fmt.Println("=====关闭失败", err)
+		}
+	}()
 
 	//获取response status code
 	var statusCode = response.StatusCode
@@ -677,7 +681,11 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer response.Body.Close()
+		defer func() {
+			if err = response.Body.Close(); err != nil {
+				fmt.Println("=====关闭失败", err)
+			}
+		}()
 
 		//解决30x跳转问题
 		var twoStatusCode = response.StatusCode
@@ -710,7 +718,11 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 			if err != nil {
 				return nil, err
 			}
-			defer response.Body.Close()
+			defer func() {
+				if err = response.Body.Close(); err != nil {
+					fmt.Println("=====关闭失败", err)
+				}
+			}()
 
 			// 获取 response body，并转换为string
 			bodyBytes, err := ioutil.ReadAll(response.Body)
@@ -865,7 +877,9 @@ func customRequests(Url string, timeout int, Method string, Path string, Header 
 		return nil, err
 	}
 	defer func() {
-		_ = resp.Body.Close()
+		if err = resp.Body.Close(); err != nil {
+			fmt.Println("=====关闭失败", err)
+		}
 	}()
 
 	//获取response body for string
@@ -938,11 +952,12 @@ func getFaviconMd5(Url string, timeout int) string {
 	}
 
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko,hzon-bas) Chrome/137.0.0.0 Safari/537.36")
-	resp, err := client.Do(req)
-	if err != nil {
-		return ""
-	}
-	defer resp.Body.Close()
+	resp, _ := client.Do(req)
+	defer func() {
+		if err = resp.Body.Close(); err != nil {
+			fmt.Println("=====关闭失败", err)
+		}
+	}()
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	hash := md5.Sum(bodyBytes)
@@ -974,7 +989,11 @@ func getFaviconHash(imageURL string, timeout int) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err = resp.Body.Close(); err != nil {
+			fmt.Println("=====关闭失败", err)
+		}
+	}()
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	// 将图片数据转换为 Base64 编码
 	base64Encoded := base64.StdEncoding.EncodeToString(bodyBytes)
