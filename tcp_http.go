@@ -633,11 +633,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 		return nil, err
 	}
 
-	defer func() {
-		if err = response.Body.Close(); err != nil {
-			fmt.Println("-------连接关闭失败", err.Error())
-		}
-	}()
+	defer response.Body.Close()
 
 	//获取response status code
 	var statusCode = response.StatusCode
@@ -681,9 +677,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer func() {
-			_ = response.Body.Close()
-		}()
+		defer response.Body.Close()
 
 		//解决30x跳转问题
 		var twoStatusCode = response.StatusCode
@@ -716,9 +710,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 			if err != nil {
 				return nil, err
 			}
-			defer func() {
-				_ = response.Body.Close()
-			}()
+			defer response.Body.Close()
 
 			// 获取 response body，并转换为string
 			bodyBytes, err := ioutil.ReadAll(response.Body)
