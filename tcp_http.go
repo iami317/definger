@@ -6,6 +6,8 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
+	"gitee.com/menciis/logx"
+	wappalyzer "github.com/projectdiscovery/wappalyzergo"
 	"github.com/spf13/cast"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"io/ioutil"
@@ -21,7 +23,6 @@ import (
 	"unicode/utf8"
 )
 
-/*
 var (
 	once sync.Once
 	wapp *wappalyzer.Wappalyze
@@ -36,8 +37,6 @@ func init() {
 		}
 	})
 }
-
-*/
 
 func identify(url string, timeout int) ([]IdentifyResult, error) {
 	var RespTitle string
@@ -752,10 +751,19 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 			//md5 hash
 			faviconMd5 := getFaviconMd5(Url, timeout)
 			faviconHash, _ := getFaviconHash(Url, timeout)
-			//technologies, _ := getTechnologies(response.Header, bodyBytes)
+			technologies, _ := getTechnologies(response.Header, bodyBytes)
 			//返回值
 			RespData := []RespLab{
-				{redirectUrl, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, nil},
+				{
+					redirectUrl,
+					responseBody,
+					responseHeader,
+					responseStatusCode,
+					responseTitle,
+					faviconMd5,
+					faviconHash,
+					technologies,
+				},
 			}
 			return RespData, nil
 		}
@@ -828,10 +836,10 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 	// md5 hash
 	faviconMd5 := getFaviconMd5(Url, timeout)
 	faviconHash, _ := getFaviconHash(Url, timeout)
-	//technologies, _ := getTechnologies(response.Header, bodyBytes)
+	technologies, _ := getTechnologies(response.Header, bodyBytes)
 	//返回数据
 	RespData := []RespLab{
-		{Url, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, nil},
+		{Url, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, technologies},
 	}
 	return RespData, nil
 
@@ -851,7 +859,8 @@ func customRequests(Url string, timeout int, Method string, Path string, Header 
 	client := &http.Client{
 		Timeout: time.Duration(timeout) * time.Second,
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
+			DisableKeepAlives: true,
 		},
 	}
 	bodyByte := bytes.NewBuffer([]byte(Body))
@@ -874,11 +883,7 @@ func customRequests(Url string, timeout int, Method string, Path string, Header 
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		if err = resp.Body.Close(); err != nil {
-			fmt.Println("=====关闭失败", err)
-		}
-	}()
+	defer resp.Body.Close()
 
 	//获取response body for string
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
@@ -913,28 +918,29 @@ func customRequests(Url string, timeout int, Method string, Path string, Header 
 	//获取response status code
 	var statusCode = resp.StatusCode
 	responseStatusCode := strconv.Itoa(statusCode)
-	//technologies, _ := getTechnologies(resp.Header, bodyBytes)
+	technologies, _ := getTechnologies(resp.Header, bodyBytes)
 	//返回数据
 	RespData := []RespLab{
-		{Url, responseBody, responseHeader, responseStatusCode, respTitle, "", 0, nil},
+		{Url, responseBody, responseHeader, responseStatusCode, respTitle, "", 0, technologies},
 	}
 	return RespData, nil
 
 }
 
-//func getTechnologies(header map[string][]string, data []byte) (tech []string, err error) {
-//	matches := wapp.Fingerprint(header, data)
-//	for match, _ := range matches {
-//		tech = append(tech, match)
-//	}
-//	return tech, nil
-//}
+func getTechnologies(header map[string][]string, data []byte) (tech []string, err error) {
+	matches := wapp.Fingerprint(header, data)
+	for match, _ := range matches {
+		tech = append(tech, match)
+	}
+	return tech, nil
+}
 
 func getFaviconMd5(Url string, timeout int) string {
 	client := &http.Client{
 		Timeout: time.Duration(timeout) * time.Second,
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
+			DisableKeepAlives: true,
 		},
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
@@ -951,11 +957,7 @@ func getFaviconMd5(Url string, timeout int) string {
 
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko,hzon-bas) Chrome/137.0.0.0 Safari/537.36")
 	resp, _ := client.Do(req)
-	defer func() {
-		if err = resp.Body.Close(); err != nil {
-			fmt.Println("=====关闭失败", err)
-		}
-	}()
+	defer resp.Body.Close()
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	hash := md5.Sum(bodyBytes)
@@ -967,7 +969,8 @@ func getFaviconHash(imageURL string, timeout int) (int64, error) {
 	client := &http.Client{
 		Timeout: time.Duration(timeout) * time.Second,
 		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
+			DisableKeepAlives: true,
 		},
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
@@ -987,11 +990,7 @@ func getFaviconHash(imageURL string, timeout int) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer func() {
-		if err = resp.Body.Close(); err != nil {
-			fmt.Println("=====关闭失败", err)
-		}
-	}()
+	defer resp.Body.Close()
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	// 将图片数据转换为 Base64 编码
 	base64Encoded := base64.StdEncoding.EncodeToString(bodyBytes)
