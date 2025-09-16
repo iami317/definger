@@ -1,24 +1,11 @@
-module github.com/iami317/definger
+module github.com/zhzyker/dismap
 
-go 1.21
-
-require (
-	gitee.com/menciis/logx v0.0.0-20240411035724-3d47726b34d5
-	github.com/k0kubun/pp/v3 v3.2.0
-	github.com/projectdiscovery/wappalyzergo v0.0.120
-	github.com/spf13/cast v1.6.0
-	github.com/twmb/murmur3 v1.1.8
-	golang.org/x/text v0.14.0
-)
+go 1.16
 
 require (
-	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
-	github.com/kataras/pio v0.0.12 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.19 // indirect
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/urfave/cli/v2 v2.27.7 // indirect
-	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
-	golang.org/x/net v0.24.0 // indirect
-	golang.org/x/sys v0.19.0 // indirect
+	github.com/gookit/color v1.4.2
+	github.com/spf13/pflag v1.0.5
+	github.com/txthinking/socks5 v0.0.0-20220212043548-414499347d4a
+	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
+	golang.org/x/text v0.3.7
 )
