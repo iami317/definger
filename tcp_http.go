@@ -43,21 +43,21 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 	var RespBody string
 	var RespHeader string
 	var RespCode string
-	var Favicon string
+	var FaviconMd5 string
 	var RequestRule string
 	var DefaultRespTitle string
 	var DefaultRespBody string
 	var DefaultRespHeader string
 	var DefaultRespCode string
 	var DefaultTarget string
-	var DefaultFavicon string
-	var DefaultTechnologies []string
+	var DefaultFaviconMd5 string
+	//var DefaultFaviconHash int64
 	var CustomRespTitle string
 	var CustomRespBody string
 	var CustomRespHeader string
 	var CustomRespCode string
 	var CustomTarget string
-	var CustomFavicon string
+	var CustomFaviconMd5 string
 
 	R, err := defaultRequests(url, timeout)
 	if err != nil { //如果目标不能连接，要提示错误
@@ -69,8 +69,8 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 		DefaultRespCode = resp.RespStatusCode
 		DefaultRespTitle = resp.RespTitle
 		DefaultTarget = resp.Url
-		DefaultFavicon = resp.faviconMd5
-		DefaultTechnologies = resp.Technologies
+		DefaultFaviconMd5 = resp.faviconMd5
+		//DefaultFaviconHash = resp.faviconHash
 	}
 
 	// 开始识别
@@ -100,11 +100,11 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 					CustomRespCode = resp.RespStatusCode
 					CustomRespTitle = resp.RespTitle
 					CustomTarget = resp.Url
-					CustomFavicon = resp.faviconMd5
+					CustomFaviconMd5 = resp.faviconMd5
 				}
 
 				url = CustomTarget
-				Favicon = CustomFavicon
+				FaviconMd5 = CustomFaviconMd5
 				RespBody = CustomRespBody
 				RespHeader = CustomRespHeader
 				RespTitle = CustomRespTitle
@@ -132,7 +132,7 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == true {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
@@ -155,7 +155,7 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == true {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
@@ -175,7 +175,7 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == true {
 							index = index + 1
 						}
 					}
@@ -197,7 +197,7 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == true {
 							index = index + 1
 						}
 					}
@@ -222,7 +222,7 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == true {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
@@ -231,38 +231,38 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				}
 				if rule.Mode == "and|or" {
 					grep := regexp.MustCompile("(.*)\\|(.*)\\|(.*)")
-					all_type := grep.FindStringSubmatch(rule.Type)
-					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[1], -1)) == 1 {
+					allType := grep.FindStringSubmatch(rule.Type)
+					if len(regexp.MustCompile("header").FindAllStringIndex(allType[1], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
 						}
-						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
+						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
 						}
 					}
-					if len(regexp.MustCompile("body").FindAllStringIndex(all_type[1], -1)) == 1 {
+					if len(regexp.MustCompile("body").FindAllStringIndex(allType[1], -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
 						}
-						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
+						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
 						}
 					}
-					if len(regexp.MustCompile("ico").FindAllStringIndex(all_type[1], -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
+					if len(regexp.MustCompile("ico").FindAllStringIndex(allType[1], -1)) == 1 {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
 						}
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
@@ -271,38 +271,38 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				}
 				if rule.Mode == "or|and" {
 					grep := regexp.MustCompile("(.*)\\|(.*)\\|(.*)")
-					all_type := grep.FindStringSubmatch(rule.Type)
-					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[3], -1)) == 1 {
+					allType := grep.FindStringSubmatch(rule.Type)
+					if len(regexp.MustCompile("header").FindAllStringIndex(allType[3], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
 						}
-						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
+						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
 						}
 					}
-					if len(regexp.MustCompile("body").FindAllStringIndex(all_type[3], -1)) == 1 {
+					if len(regexp.MustCompile("body").FindAllStringIndex(allType[3], -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
 						}
-						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
+						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
 						}
 					}
-					if len(regexp.MustCompile("ico").FindAllStringIndex(all_type[3], -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
+					if len(regexp.MustCompile("ico").FindAllStringIndex(allType[3], -1)) == 1 {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
 						}
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							successType = rule.Type
 							return
@@ -312,7 +312,7 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 
 			} else { //默认请求
 				url = DefaultTarget
-				Favicon = DefaultFavicon
+				FaviconMd5 = DefaultFaviconMd5
 				RespBody = DefaultRespBody
 				RespHeader = DefaultRespHeader
 				RespCode = DefaultRespCode
@@ -342,13 +342,21 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == true {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 					}
+					//if len(regexp.MustCompile("icoHash").FindAllStringIndex(rule.Type, -1)) == 1 {
+					//	if checkFaviconHash(FaviconHash, rule.Rule.InIcoHash) == true {
+					//		IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
+					//		RequestRule = "DefaultRequest"
+					//		successType = rule.Type
+					//		return
+					//	}
+					//}
 				}
 				if rule.Mode == "or" {
 					if len(regexp.MustCompile("header").FindAllStringIndex(rule.Type, -1)) == 1 {
@@ -368,7 +376,7 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == true {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
@@ -389,7 +397,7 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == true {
 							index = index + 1
 						}
 					}
@@ -411,7 +419,7 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == true {
 							index = index + 1
 						}
 					}
@@ -438,7 +446,7 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 						}
 					}
 					if len(regexp.MustCompile("ico").FindAllStringIndex(rule.Type, -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == true {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == true {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
@@ -448,43 +456,43 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				}
 				if rule.Mode == "and|or" {
 					grep := regexp.MustCompile("(.*)\\|(.*)\\|(.*)")
-					all_type := grep.FindStringSubmatch(rule.Type)
-					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[1], -1)) == 1 {
+					allType := grep.FindStringSubmatch(rule.Type)
+					if len(regexp.MustCompile("header").FindAllStringIndex(allType[1], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
-						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
+						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 					}
-					if len(regexp.MustCompile("body").FindAllStringIndex(all_type[1], -1)) == 1 {
+					if len(regexp.MustCompile("body").FindAllStringIndex(allType[1], -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
-						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
+						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 					}
-					if len(regexp.MustCompile("ico").FindAllStringIndex(all_type[1], -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
+					if len(regexp.MustCompile("ico").FindAllStringIndex(allType[1], -1)) == 1 {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
@@ -494,43 +502,43 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 				}
 				if rule.Mode == "or|and" {
 					grep := regexp.MustCompile("(.*)\\|(.*)\\|(.*)")
-					all_type := grep.FindStringSubmatch(rule.Type)
-					if len(regexp.MustCompile("header").FindAllStringIndex(all_type[3], -1)) == 1 {
+					allType := grep.FindStringSubmatch(rule.Type)
+					if len(regexp.MustCompile("header").FindAllStringIndex(allType[3], -1)) == 1 {
 						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
-						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
+						if checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) == checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 					}
-					if len(regexp.MustCompile("body").FindAllStringIndex(all_type[3], -1)) == 1 {
+					if len(regexp.MustCompile("body").FindAllStringIndex(allType[3], -1)) == 1 {
 						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
-						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFavicon(Favicon, rule.Rule.InIcoMd5) {
+						if checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) == checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
 					}
-					if len(regexp.MustCompile("ico").FindAllStringIndex(all_type[3], -1)) == 1 {
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
+					if len(regexp.MustCompile("ico").FindAllStringIndex(allType[3], -1)) == 1 {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == checkHeader(url, RespHeader, rule.Rule.InHeader, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
 							return
 						}
-						if checkFavicon(Favicon, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
+						if checkFaviconMd5(FaviconMd5, rule.Rule.InIcoMd5) == checkBody(url, RespBody, rule.Rule.InBody, rule.Name, RespTitle, RespCode) {
 							IdentifyData = append(IdentifyData, Identify_Result{Name: rule.Name, Rank: rule.Rank, Type: rule.Type})
 							RequestRule = "DefaultRequest"
 							successType = rule.Type
@@ -544,13 +552,14 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 	}
 	wg.Wait()
 
-	if RequestRule == "DefaultRequest" {
+	switch RequestRule {
+	case "DefaultRequest":
 		RespBody = DefaultRespBody
 		RespHeader = DefaultRespHeader
 		RespCode = DefaultRespCode
 		RespTitle = DefaultRespTitle
 		url = DefaultTarget
-	} else if RequestRule == "CustomRequest" {
+	case "CustomRequest":
 		url = CustomTarget
 		RespBody = CustomRespBody
 		RespHeader = CustomRespHeader
@@ -569,7 +578,8 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 		}
 	}
 	//r := strings.ReplaceAll(identify_result, "][", "] [")
-	res := []IdentifyResult{{successType, RespCode, identify_result, url, RespTitle, DefaultTechnologies}}
+	//获取Technologies，将Technologies放到identify_result
+	res := []IdentifyResult{{successType, RespCode, identify_result, url, RespTitle}}
 	return res, err
 }
 
@@ -581,16 +591,14 @@ type RespLab struct {
 	RespTitle      string
 	faviconMd5     string
 	faviconHash    int64
-	Technologies   []string
 }
 
 type IdentifyResult struct {
-	Type         string
-	RespCode     string
-	Result       string
-	Url          string
-	Title        string
-	Technologies []string
+	Type     string
+	RespCode string
+	Result   string
+	Url      string
+	Title    string
 }
 
 func defaultRequests(Url string, timeout int) ([]RespLab, error) {
@@ -630,11 +638,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 		return nil, err
 	}
 
-	defer func() {
-		if err = response.Body.Close(); err != nil {
-			fmt.Println("=====关闭失败", err)
-		}
-	}()
+	defer response.Body.Close()
 
 	//获取response status code
 	var statusCode = response.StatusCode
@@ -678,11 +682,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer func() {
-			if err = response.Body.Close(); err != nil {
-				fmt.Println("=====关闭失败", err)
-			}
-		}()
+		defer response.Body.Close()
 
 		//解决30x跳转问题
 		var twoStatusCode = response.StatusCode
@@ -715,11 +715,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 			if err != nil {
 				return nil, err
 			}
-			defer func() {
-				if err = response.Body.Close(); err != nil {
-					fmt.Println("=====关闭失败", err)
-				}
-			}()
+			defer response.Body.Close()
 
 			// 获取 response body，并转换为string
 			bodyBytes, err := ioutil.ReadAll(response.Body)
@@ -751,7 +747,6 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 			//md5 hash
 			faviconMd5 := getFaviconMd5(Url, timeout)
 			faviconHash, _ := getFaviconHash(Url, timeout)
-			technologies, _ := getTechnologies(response.Header, bodyBytes)
 			//返回值
 			RespData := []RespLab{
 				{
@@ -762,7 +757,6 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 					responseTitle,
 					faviconMd5,
 					faviconHash,
-					technologies,
 				},
 			}
 			return RespData, nil
@@ -798,10 +792,17 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 		//md5 hash
 		faviconMd5 := getFaviconMd5(Url, timeout)
 		faviconHash, _ := getFaviconHash(Url, timeout)
-		//technologies, _ := getTechnologies(response.Header, bodyBytes)
 		//返回数据
 		RespData := []RespLab{
-			{redirectUrl, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, nil},
+			{
+				redirectUrl,
+				responseBody,
+				responseHeader,
+				responseStatusCode,
+				responseTitle,
+				faviconMd5,
+				faviconHash,
+			},
 		}
 		return RespData, nil
 	}
@@ -836,10 +837,17 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 	// md5 hash
 	faviconMd5 := getFaviconMd5(Url, timeout)
 	faviconHash, _ := getFaviconHash(Url, timeout)
-	technologies, _ := getTechnologies(response.Header, bodyBytes)
 	//返回数据
 	RespData := []RespLab{
-		{Url, responseBody, responseHeader, responseStatusCode, responseTitle, faviconMd5, faviconHash, technologies},
+		{
+			Url,
+			responseBody,
+			responseHeader,
+			responseStatusCode,
+			responseTitle,
+			faviconMd5,
+			faviconHash,
+		},
 	}
 	return RespData, nil
 
@@ -918,10 +926,17 @@ func customRequests(Url string, timeout int, Method string, Path string, Header 
 	//获取response status code
 	var statusCode = resp.StatusCode
 	responseStatusCode := strconv.Itoa(statusCode)
-	technologies, _ := getTechnologies(resp.Header, bodyBytes)
 	//返回数据
 	RespData := []RespLab{
-		{Url, responseBody, responseHeader, responseStatusCode, respTitle, "", 0, technologies},
+		{
+			Url,
+			responseBody,
+			responseHeader,
+			responseStatusCode,
+			respTitle,
+			"",
+			0,
+		},
 	}
 	return RespData, nil
 
@@ -1023,9 +1038,17 @@ func checkBody(url, responseBody string, ruleBody string, name string, title str
 	}
 }
 
-func checkFavicon(Favicon, ruleFaviconMd5 string) bool {
+func checkFaviconMd5(Favicon, ruleFaviconMd5 string) bool {
 	grep := regexp.MustCompile("(?i)" + ruleFaviconMd5)
 	if len(grep.FindStringSubmatch(Favicon)) != 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
+func checkFaviconHash(FaviconHash, ruleFaviconHash int64) bool {
+	if FaviconHash == ruleFaviconHash {
 		return true
 	} else {
 		return false

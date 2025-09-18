@@ -15,25 +15,13 @@ var DefaultHeader = map[string]string{
 }
 
 type DefineResult struct {
-	Title        string   `json:"title,omitempty"`
-	Host         string   `json:"host,omitempty"`
-	Port         string   `json:"port,omitempty"`
-	Path         string   `json:"path,omitempty"`
-	Url          string   `json:"url,omitempty"`
-	Protocol     string   `json:"protocol,omitempty" #:"协议"`
-	IdentifyInfo string   `json:"identify_info,omitempty" #:"指纹信息"`
-	Technologies []string `json:"technologies,omitempty" `
-}
-
-type DefineCert struct {
-	Subject            string   `json:"subject" #:"主体"`
-	DomainName         string   `json:"domainName" #:"域名"`
-	SignatureAlgorithm string   `json:"signature_algorithm" #:"签名哈希算法"`
-	PublicKeyAlgorithm string   `json:"public_key_algorithm" #:"公钥加密算法"`
-	Issuer             string   `json:"issuer" #:"颁发者"`
-	SANs               []string `json:"sans"`
-	NotBefore          string   `json:"notBefore" #:"开始时间(UTC)"`
-	NotAfter           string   `json:"notAfter" #:"结束时间(UTC)"`
+	Title        string `json:"title,omitempty"`
+	Host         string `json:"host,omitempty"`
+	Port         string `json:"port,omitempty"`
+	Path         string `json:"path,omitempty"`
+	Url          string `json:"url,omitempty"`
+	Protocol     string `json:"protocol,omitempty" #:"协议"`
+	IdentifyInfo string `json:"identify_info,omitempty" #:"指纹信息"`
 }
 
 func NewDefineResult(host string, port string, pt string) *DefineResult {
@@ -58,7 +46,6 @@ func (d *DefineResult) HttpIdentifyResult() {
 		d.IdentifyInfo = results.Result
 		d.Url = results.Url
 		d.Title = results.Title
-		d.Technologies = results.Technologies
 		if strings.HasPrefix(d.Url, "https") {
 			d.Protocol = "https"
 		}

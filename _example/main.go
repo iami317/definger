@@ -10,19 +10,6 @@ import (
 const defaultPort = "443"
 
 func RunApp() {
-	//host := "gitee.com"
-	//port := 443
-	//pt := "https"
-	//result := definger.NewDefineResult(host, port, pt)
-	//result.RunDefinger()
-	//fmt.Println("result.title: ", result.Title)
-	//fmt.Println("result.host: ", result.Host)
-	//fmt.Println("result.port: ", result.Port)
-	//fmt.Println("result.path: ", result.Path)
-	//fmt.Println("result.protocol: ", result.Protocol)
-	//fmt.Println("result.identify: ", result.Identify)
-	//fmt.Println("result.identify_info: ", result.IdentifyInfo)
-	//fmt.Println("result.url: ", result.Url)
 	app := cli.NewApp()
 	app.Usage = ""
 	app.Name = "definger"
