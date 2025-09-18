@@ -16,18 +16,13 @@ func RunApp() {
 	app.Usage = "author: mlh"
 	app.Version = "0.1 beta"
 	app.Description = ""
-	app.Copyright = "qdcx co."
+	app.Copyright = "hzon.com"
 	app.HelpName = "-h"
 	app.Flags = []cli.Flag{
 		&cli.StringFlag{
-			Name:    "target",
-			Aliases: []string{"t"},
+			Name:    "url",
+			Aliases: []string{"u"},
 			Usage:   "Specify a target URL [e.g. -url https://example.com]",
-		},
-		&cli.BoolFlag{
-			Name:    "tech-detect",
-			Aliases: []string{"td"},
-			Usage:   "display technology in use based on wappalyzer dataset",
 		},
 	}
 	app.Action = RunServer
@@ -44,7 +39,7 @@ func main() {
 }
 
 func RunServer(c *cli.Context) error {
-	scheme, host, port, _ := definger.SplitSchemeHostPort(c.String("target"))
+	scheme, host, port, _ := definger.SplitSchemeHostPort(c.String("url"))
 	client := definger.NewDefineResult(host, port, scheme)
 	client.HttpIdentifyResult()
 	client.Print()
