@@ -677,11 +677,12 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 		//}
 		identifyResultArr = append(identifyResultArr, strings.ToLower(rs.Name))
 	}
-
+	fmt.Println("----------", identifyResultArr)
 	//获取Technologies，将Technologies放到identify_result
 	if len(R) > 0 {
 		technologies, err := getTechnologies(R[0].Response)
 		if err == nil {
+			fmt.Println("=========", technologies)
 			for _, technology := range technologies {
 				identifyResultArr = append(identifyResultArr, technology)
 			}
