@@ -63,7 +63,6 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 	// 开始识别
 	var successType string
 	var identifyResult string
-	var identifyResultArr []string
 	type Identify_Result struct {
 		Name string
 		Rank int
@@ -667,34 +666,50 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 		RespTitle = CustomRespTitle
 	}
 
-	for _, rs := range IdentifyData {
-		//switch rs.Rank {
-		//case 1:
-		//	identifyResult += rs.Name + " "
-		//case 2:
-		//	identifyResult += rs.Name + " "
-		//case 3:
-		//	identifyResult += rs.Name + " "
-		//}
-		identifyResultArr = append(identifyResultArr, strings.ToLower(rs.Name))
-	}
+	//for _, rs := range IdentifyData {
+	//switch rs.Rank {
+	//case 1:
+	//	identifyResult += rs.Name + " "
+	//case 2:
+	//	identifyResult += rs.Name + " "
+	//case 3:
+	//	identifyResult += rs.Name + " "
+	//}
+	//	identifyResultArr = append(identifyResultArr, strings.ToLower(rs.Name))
+	//}
 	//获取Technologies，将Technologies放到identify_result
+	var result []string
 	if len(R) > 0 {
-		technologies, err := getTechnologies(R[0].Response.Header, R[0].RespBody)
-		if err == nil {
-			for _, technology := range technologies {
-				identifyResultArr = append(identifyResultArr, technology)
+		result, _ = getTechnologies(R[0].Response.Header, R[0].RespBody)
+	}
+	if len(IdentifyData) > 0 {
+		for _, s := range IdentifyData {
+			name := strings.ToLower(s.Name)
+			if len(result) > 0 {
+				if !InArrayStr(name, result) {
+					result = append(result, name)
+				}
+			} else {
+				result = append(result, name)
 			}
 		}
 	}
 
-	if len(identifyResultArr) > 0 {
-		identifyResultArr = ArrayUnique(identifyResultArr)
-		identifyResult = strings.Join(identifyResultArr, ",")
+	if len(result) > 0 {
+		identifyResult = strings.Join(result, ",")
 	}
 
 	res := []IdentifyResult{{successType, RespCode, identifyResult, url, RespTitle}}
 	return res, err
+}
+
+func InArrayStr(s string, sA []string) bool {
+	for _, s2 := range sA {
+		if strings.Contains(s2, s) {
+			return true
+		}
+	}
+	return false
 }
 
 type RespLab struct {
@@ -1065,7 +1080,7 @@ func getTechnologies(respHeader map[string][]string, respBody string) (tech []st
 	wapp, _ := wappalyzer.New()
 	matches := wapp.Fingerprint(respHeader, []byte(respBody))
 	for match, _ := range matches {
-		tech = append(tech, match)
+		tech = append(tech, strings.ToLower(match))
 	}
 	return tech, nil
 }
@@ -1183,6 +1198,7 @@ func checkFaviconMd5(Favicon, ruleFaviconMd5 string) bool {
 }
 
 func checkFaviconHash(FaviconHash, ruleFaviconHash int64) bool {
+	//fmt.Println(FaviconHash)
 	if FaviconHash == ruleFaviconHash {
 		return true
 	} else {
