@@ -1171,6 +1171,7 @@ func checkBody(url, responseBody string, ruleBody string, name string, title str
 }
 
 func checkFaviconMd5(Favicon, ruleFaviconMd5 string) bool {
+	fmt.Println("-------checkFaviconMd5", Favicon)
 	ruleFaviconMd5 = fmt.Sprintf(`(?i)%v`, ruleFaviconMd5)
 	reg, err := regexp2.Compile(ruleFaviconMd5, 0)
 	if err != nil {
@@ -1185,6 +1186,7 @@ func checkFaviconMd5(Favicon, ruleFaviconMd5 string) bool {
 }
 
 func checkFaviconHash(FaviconHash, ruleFaviconHash int64) bool {
+	fmt.Println("-------checkFaviconHash", FaviconHash)
 	if FaviconHash == ruleFaviconHash {
 		return true
 	} else {
