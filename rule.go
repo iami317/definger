@@ -987,7 +987,7 @@ var RuleData = []RuleLab{
 	{1, "Creatsoft-System", "body", "", InStr{`(href="/corrosion/charts/water-pid.jsp|href="/corrosion/charts/ph.jsp")`, ``, ``, 0}, ReqHttp{"", "", nil, ""}},
 	{1, "Crhms-Medical-Insurance-Decision-Support-System", "body", "", InStr{`(name="source" value="clientbin/cisdasystem.xap")`, ``, ``, 0}, ReqHttp{"", "", nil, ""}},
 	{1, "Crhms-Medical-Insurance-Review-System", "body", "", InStr{`(url, "中公网医疗信息管理系统", option)`, ``, ``, 0}, ReqHttp{"", "", nil, ""}},
-	{1, "Crmeb", "icoMd5|icoHash", "", InStr{``, ``, `(d41d8cd98f00b204e9800998ecf8427e)`, -1840324437}, ReqHttp{"", "", nil, ""}},
+	///{1, "Crmeb", "icoMd5", "", InStr{``, ``, `(d41d8cd98f00b204e9800998ecf8427e)`, 0}, ReqHttp{"", "", nil, ""}},
 	{1, "Crow-Force-portal-CMS", "body", "", InStr{`(中企动力提供技术支持)`, ``, ``, 0}, ReqHttp{"", "", nil, ""}},
 	{1, "CSCMS", "body", "", InStr{`(tag_adfo dis_wap|/js/cscms.js)`, ``, ``, 0}, ReqHttp{"", "", nil, ""}},
 	{1, "CSmail", "body", "", InStr{`(<frame src="/mainframe_zh-cn.html" />)`, ``, ``, 0}, ReqHttp{"", "", nil, ""}},
