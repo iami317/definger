@@ -1142,13 +1142,12 @@ func getFaviconHash(imageURL string, timeout int) (int64, error) {
 
 func checkHeader(url, responseHeader string, ruleHeader string, name string, title string, RespCode string) bool {
 	//ruleHeader = regexp2.Escape(ruleHeader)
-	ruleHeader = fmt.Sprintf(`(?i)%v`, fmt.Sprintf(`(%v)`, ruleHeader))
-	reg, err := regexp2.Compile(ruleHeader, 0)
+	grep, err := regexp.Compile("(?i)" + ruleHeader)
 	if err != nil {
 		return false
 	}
-	match, _ := reg.MatchString(responseHeader)
-	if match {
+	if len(grep.FindStringSubmatch(responseHeader)) != 0 {
+		//fmt.Print("[header] ")
 		return true
 	} else {
 		return false
@@ -1157,13 +1156,12 @@ func checkHeader(url, responseHeader string, ruleHeader string, name string, tit
 
 func checkBody(url, responseBody string, ruleBody string, name string, title string, RespCode string) bool {
 	//ruleBody = regexp2.Escape(ruleBody)
-	ruleBody = fmt.Sprintf(`(?i)%v`, ruleBody)
-	reg, err := regexp2.Compile(ruleBody, 0)
+	grep, err := regexp.Compile("(?i)" + ruleBody)
 	if err != nil {
 		return false
 	}
-	match, _ := reg.MatchString(responseBody)
-	if match {
+	match := grep.FindStringSubmatch(responseBody)
+	if len(match) != 0 {
 		return true
 	} else {
 		return false
@@ -1171,7 +1169,6 @@ func checkBody(url, responseBody string, ruleBody string, name string, title str
 }
 
 func checkFaviconMd5(Favicon, ruleFaviconMd5 string) bool {
-	fmt.Println("-------checkFaviconMd5", Favicon)
 	ruleFaviconMd5 = fmt.Sprintf(`(?i)%v`, ruleFaviconMd5)
 	reg, err := regexp2.Compile(ruleFaviconMd5, 0)
 	if err != nil {
@@ -1186,7 +1183,6 @@ func checkFaviconMd5(Favicon, ruleFaviconMd5 string) bool {
 }
 
 func checkFaviconHash(FaviconHash, ruleFaviconHash int64) bool {
-	fmt.Println("-------checkFaviconHash", FaviconHash)
 	if FaviconHash == ruleFaviconHash {
 		return true
 	} else {
