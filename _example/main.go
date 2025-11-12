@@ -12,7 +12,7 @@ const defaultPort = "443"
 func RunApp() {
 	app := cli.NewApp()
 	app.Usage = ""
-	app.Name = "definger"
+	app.Name = "deFinger"
 	app.Usage = "author: mlh"
 	app.Version = "0.1 beta"
 	app.Description = ""

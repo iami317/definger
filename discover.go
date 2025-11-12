@@ -35,7 +35,7 @@ func NewDefineResult(host string, port string, pt string) *DefineResult {
 }
 
 func (d *DefineResult) HttpIdentifyResult() {
-	var timeout = 3
+	var timeout = 10
 	var targetUrl string
 	targetUrl = d.getTargetUrl(d.Host, d.Port)
 	r, err := identify(targetUrl, timeout)
