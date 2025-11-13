@@ -39,8 +39,11 @@ func main() {
 }
 
 func RunServer(c *cli.Context) error {
-	scheme, host, port, _ := definger.SplitSchemeHostPort(c.String("url"))
-	client := definger.NewDefineResult(host, port, scheme)
+	scheme, host, port, path, err := definger.SplitSchemeHostPort(c.String("url"))
+	if err != nil {
+		return err
+	}
+	client := definger.NewDefineResult(scheme, host, port, path)
 	client.HttpIdentifyResult()
 	client.Print()
 	return nil

@@ -4,14 +4,17 @@ import (
 	"fmt"
 	"gitee.com/menciis/logx"
 	"github.com/k0kubun/pp/v3"
-	"net"
 	"strings"
 )
 
 var DefaultHeader = map[string]string{
-	"Accept-Language": "zh,zh-TW;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6",
-	"User-agent":      "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36",
-	"Cookie":          "rememberMe=int",
+	"Accept-Language":           "zh,zh-TW;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6",
+	"User-Agent":                "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36",
+	"Cookie":                    "rememberMe=int",
+	"accept":                    "*/*",
+	"accept-encoding":           "gzip, deflate",
+	"cache-control":             "no-cache",
+	"upgrade-insecure-requests": "1",
 }
 
 type DefineResult struct {
@@ -23,13 +26,15 @@ type DefineResult struct {
 	Protocol     string `json:"protocol,omitempty" #:"协议"`
 	IdentifyInfo string `json:"identify_info,omitempty" #:"指纹信息"`
 	FavicoHash   int64  `json:"favico_hash"`
+	FavicoMd5    string `json:"favico_md5"`
 }
 
-func NewDefineResult(host string, port string, pt string) *DefineResult {
+func NewDefineResult(scheme string, host string, port string, path string) *DefineResult {
 	c := &DefineResult{
-		Protocol:     pt, //http, https
+		Protocol:     scheme, //http, https
 		Host:         host,
 		Port:         port,
+		Path:         path,
 		IdentifyInfo: "None", //状态码
 	}
 	return c
@@ -38,7 +43,7 @@ func NewDefineResult(host string, port string, pt string) *DefineResult {
 func (d *DefineResult) HttpIdentifyResult() {
 	var timeout = 10
 	var targetUrl string
-	targetUrl = d.getTargetUrl(d.Host, d.Port)
+	targetUrl = d.getTargetUrl()
 	r, err := identify(targetUrl, timeout)
 	if err != nil {
 		logx.Error(err)
@@ -48,6 +53,7 @@ func (d *DefineResult) HttpIdentifyResult() {
 		d.Url = results.Url
 		d.Title = results.Title
 		d.FavicoHash = results.FaviconHash
+		d.FavicoMd5 = results.FaviconMd5
 		if strings.HasPrefix(d.Url, "https") {
 			d.Protocol = "https"
 		}
@@ -55,17 +61,8 @@ func (d *DefineResult) HttpIdentifyResult() {
 
 }
 
-func (d *DefineResult) getTargetUrl(host string, port string) string {
-	//if hubur.IsIP(host) && hubur.IsIPv6(host) {
-	//	host = fmt.Sprintf("[%v]", host)
-	//}
-	if port == "80" {
-		return fmt.Sprintf("http://%v", net.JoinHostPort(host, port))
-	} else if port == "443" || port == "8443" || port == "10000" {
-		return fmt.Sprintf("https://%v", net.JoinHostPort(host, port))
-	} else {
-		return fmt.Sprintf("http://%v", net.JoinHostPort(host, port))
-	}
+func (d *DefineResult) getTargetUrl() string {
+	return fmt.Sprintf("%v://%v%v", d.Protocol, d.Host, d.Path)
 }
 
 func (d *DefineResult) Print() {

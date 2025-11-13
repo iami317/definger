@@ -5,33 +5,34 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/twmb/murmur3"
-	"net"
 	"net/url"
 	"strings"
 )
 
-func SplitSchemeHostPort(hostport string) (scheme string, host string, port string, err error) {
-	if strings.Contains(hostport, "://") && strings.Contains(hostport, "http") {
-		u, err := url.Parse(hostport)
-		if err != nil {
-			return "", "", "", err
-		}
-		scheme = u.Scheme
-		hostport = u.Host
-	} else {
-		scheme = "http"
+func SplitSchemeHostPort(urlPath string) (scheme string, host string, port string, path string, err error) {
+	if len(urlPath) == 0 {
+		return "", "", "", "", fmt.Errorf("请输入合法的url地址")
 	}
-
-	if !strings.Contains(hostport, ":") {
-		return scheme, hostport, getDefaultPort(scheme), nil
+	if !strings.Contains(urlPath, "://") {
+		return "", "", "", "", fmt.Errorf("请输入合法的url地址")
 	}
-
-	host, port, err = net.SplitHostPort(hostport)
+	u, err := url.Parse(urlPath)
 	if err != nil {
-		return scheme, "", "", err
+		return "", "", "", "", err
+	}
+	port = "80"
+	path = "/"
+	if len(u.Scheme) > 0 && u.Scheme == "https" && u.Port() == "" {
+		port = "443"
+	}
+	if len(u.Port()) > 0 {
+		port = u.Port()
 	}
 
-	return scheme, host, port, nil
+	if len(u.Path) > 0 {
+		path = u.Path
+	}
+	return u.Scheme, u.Host, port, path, nil
 }
 
 func getDefaultPort(scheme string) string {
