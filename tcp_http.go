@@ -699,7 +699,15 @@ func identify(url string, timeout int) ([]IdentifyResult, error) {
 		identifyResult = strings.Join(result, ",")
 	}
 
-	res := []IdentifyResult{{successType, RespCode, identifyResult, url, RespTitle}}
+	res := []IdentifyResult{
+		{successType,
+			RespCode,
+			identifyResult,
+			url,
+			RespTitle,
+			DefaultFaviconHash,
+		},
+	}
 	return res, err
 }
 
@@ -724,11 +732,12 @@ type RespLab struct {
 }
 
 type IdentifyResult struct {
-	Type     string
-	RespCode string
-	Result   string
-	Url      string
-	Title    string
+	Type        string
+	RespCode    string
+	Result      string
+	Url         string
+	Title       string
+	FaviconHash int64
 }
 
 func defaultRequests(Url string, timeout int) ([]RespLab, error) {
@@ -875,8 +884,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 			}
 
 			//md5 hash
-			faviconMd5 := getFaviconMd5(Url, timeout)
-			faviconHash, _ := getFaviconHash(Url, timeout)
+			faviconMd5, faviconHash := getFavicon(Url, timeout)
 			//返回值
 			RespData := []RespLab{
 				{
@@ -921,8 +929,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 		}
 
 		//md5 hash
-		faviconMd5 := getFaviconMd5(Url, timeout)
-		faviconHash, _ := getFaviconHash(Url, timeout)
+		faviconMd5, faviconHash := getFavicon(Url, timeout)
 		//返回数据
 		RespData := []RespLab{
 			{
@@ -967,8 +974,7 @@ func defaultRequests(Url string, timeout int) ([]RespLab, error) {
 	}
 
 	// md5 hash
-	faviconMd5 := getFaviconMd5(Url, timeout)
-	faviconHash, _ := getFaviconHash(Url, timeout)
+	faviconMd5, faviconHash := getFavicon(Url, timeout)
 	//返回数据
 	RespData := []RespLab{
 		{
@@ -1085,7 +1091,7 @@ func getTechnologies(respHeader map[string][]string, respBody string) (tech []st
 	return tech, nil
 }
 
-func getFaviconMd5(Url string, timeout int) string {
+func getFavicon(Url string, timeout int) (string, int64) {
 	client := &http.Client{
 		Timeout: time.Duration(timeout) * time.Second,
 		Transport: &http.Transport{
@@ -1099,7 +1105,7 @@ func getFaviconMd5(Url string, timeout int) string {
 	Url = Url + "/favicon.ico"
 	req, err := http.NewRequest("GET", Url, nil)
 	if err != nil {
-		return ""
+		return "", 0
 	}
 	for key, value := range DefaultHeader {
 		req.Header.Set(key, value)
@@ -1112,47 +1118,21 @@ func getFaviconMd5(Url string, timeout int) string {
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	hash := md5.Sum(bodyBytes)
 	md5Hash := fmt.Sprintf("%x", hash)
-	return md5Hash
+	return md5Hash, getFaviconHash(bodyBytes)
 }
 
-func getFaviconHash(imageURL string, timeout int) (int64, error) {
-	client := &http.Client{
-		Timeout: time.Duration(timeout) * time.Second,
-		Transport: &http.Transport{
-			TLSClientConfig:   &tls.Config{InsecureSkipVerify: true},
-			DisableKeepAlives: true,
-		},
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
-	imageURL = imageURL + "/favicon.ico"
-	req, err := http.NewRequest("GET", imageURL, nil)
-	if err != nil {
-		return 0, err
-	}
-	for key, value := range DefaultHeader {
-		req.Header.Set(key, value)
-	}
-
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko,hzon-bas) Chrome/137.0.0.0 Safari/537.36")
-	resp, err := client.Do(req)
-	if err != nil {
-		return 0, err
-	}
-	defer resp.Body.Close()
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+func getFaviconHash(bodyBytes []byte) int64 {
 	// 将图片数据转换为 Base64 编码
 	base64Encoded := base64.StdEncoding.EncodeToString(bodyBytes)
 	var base64Str string
 	if base64Encoded != "" {
 		if body, err := base64.StdEncoding.DecodeString(base64Encoded); err != nil {
-			return 0, err
+			return 0
 		} else {
 			base64Str = string(body)
 		}
 	}
-	return cast.ToInt64(Mmh3Hash32(Mmh3Base64Encode(base64Str))), nil
+	return cast.ToInt64(Mmh3Hash32(Mmh3Base64Encode(base64Str)))
 }
 
 func checkHeader(url, responseHeader string, ruleHeader string, name string, title string, RespCode string) bool {

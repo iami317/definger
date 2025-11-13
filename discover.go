@@ -22,6 +22,7 @@ type DefineResult struct {
 	Url          string `json:"url,omitempty"`
 	Protocol     string `json:"protocol,omitempty" #:"协议"`
 	IdentifyInfo string `json:"identify_info,omitempty" #:"指纹信息"`
+	FavicoHash   int64  `json:"favico_hash"`
 }
 
 func NewDefineResult(host string, port string, pt string) *DefineResult {
@@ -46,6 +47,7 @@ func (d *DefineResult) HttpIdentifyResult() {
 		d.IdentifyInfo = results.Result
 		d.Url = results.Url
 		d.Title = results.Title
+		d.FavicoHash = results.FaviconHash
 		if strings.HasPrefix(d.Url, "https") {
 			d.Protocol = "https"
 		}
