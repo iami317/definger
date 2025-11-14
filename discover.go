@@ -62,7 +62,7 @@ func (d *DefineResult) HttpIdentifyResult() {
 }
 
 func (d *DefineResult) getTargetUrl() string {
-	return fmt.Sprintf("%v://%v%v", d.Protocol, d.Host, d.Path)
+	return fmt.Sprintf("%v://%v:%v%v", d.Protocol, d.Host, d.Port, d.Path)
 }
 
 func (d *DefineResult) Print() {
