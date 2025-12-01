@@ -32,7 +32,15 @@ func SplitSchemeHostPort(urlPath string) (scheme string, host string, port strin
 	if len(u.Path) > 0 {
 		path = u.Path
 	}
-	return u.Scheme, u.Host, port, path, nil
+	if strings.Contains(u.Host, ":") {
+		uu := strings.Split(u.Host, ":")
+		if len(uu) > 1 {
+			host = uu[0]
+		}
+	} else {
+		host = u.Host
+	}
+	return u.Scheme, host, port, path, nil
 }
 
 func getDefaultPort(scheme string) string {

@@ -7,8 +7,6 @@ import (
 	"os"
 )
 
-const defaultPort = "443"
-
 func RunApp() {
 	app := cli.NewApp()
 	app.Usage = ""

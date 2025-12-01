@@ -1,6 +1,7 @@
 package definger
 
 import (
+	"encoding/json"
 	"fmt"
 	"gitee.com/menciis/logx"
 	"github.com/k0kubun/pp/v3"
@@ -62,6 +63,8 @@ func (d *DefineResult) HttpIdentifyResult() {
 }
 
 func (d *DefineResult) getTargetUrl() string {
+	bb, _ := json.Marshal(d)
+	fmt.Println(string(bb))
 	return fmt.Sprintf("%v://%v:%v%v", d.Protocol, d.Host, d.Port, d.Path)
 }
 
