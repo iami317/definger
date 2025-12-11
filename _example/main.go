@@ -12,7 +12,7 @@ func RunApp() {
 	app.Usage = ""
 	app.Name = "deFinger"
 	app.Usage = "author: mlh"
-	app.Version = "0.1 beta"
+	app.Version = "v1.0.0-beta"
 	app.Description = ""
 	app.Copyright = "hzon.com"
 	app.HelpName = "-h"
